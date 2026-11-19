@@ -27,15 +27,17 @@ Launch [lumen](https://github.com/PedroPM-775/lumen) from Neovim: side-by-side d
     keymap = false,
   },
   cmd = { "Lumen", "LumenPick" },
-  config = function(_, opts)
-    require("lumen").setup(opts)
-    -- LazyVim maps <leader>gL to git_log; reclaim it after load
-    vim.schedule(function()
+  init = function()
+    local function map()
       pcall(vim.keymap.del, "n", "<leader>gL")
       vim.keymap.set("n", "<leader>gL", function()
         require("lumen").pick_diff()
       end, { desc = "Lumen diff (pick branches)" })
-    end)
+    end
+    vim.api.nvim_create_autocmd("User", { pattern = "LazyVimKeymaps", callback = map })
+  end,
+  config = function(_, opts)
+    require("lumen").setup(opts)
   end,
 }
 ```
