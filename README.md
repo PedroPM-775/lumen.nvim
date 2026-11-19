@@ -15,6 +15,8 @@ Launch [lumen](https://github.com/PedroPM-775/lumen) from Neovim: side-by-side d
 ```lua
 {
   "PedroPM-775/lumen.nvim",
+  lazy = false,
+  priority = 1000,
   dependencies = {
     "folke/snacks.nvim",
   },
@@ -22,9 +24,19 @@ Launch [lumen](https://github.com/PedroPM-775/lumen) from Neovim: side-by-side d
     base = "develop",
     head = "HEAD",
     use_triple_dot = true,
-    keymap = "<leader>gL",
-    keymap_action = "pick_diff", -- "open" | "pick_diff"
+    keymap = false,
   },
+  cmd = { "Lumen", "LumenPick" },
+  config = function(_, opts)
+    require("lumen").setup(opts)
+    -- LazyVim maps <leader>gL to git_log; reclaim it after load
+    vim.schedule(function()
+      pcall(vim.keymap.del, "n", "<leader>gL")
+      vim.keymap.set("n", "<leader>gL", function()
+        require("lumen").pick_diff()
+      end, { desc = "Lumen diff (pick branches)" })
+    end)
+  end,
 }
 ```
 
